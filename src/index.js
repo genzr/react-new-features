@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import * as serviceWorker from './serviceWorker';
 
 const NoteApp = () => {
-
-    const [ notes, setNotes ] = useState([])
+    const storage = localStorage.getItem('notes')
+    const parseStorage = JSON.parse(storage)
+    const [ notes, setNotes ] = useState(parseStorage || [])
     const [ title, setTitle ] = useState('')
     const [ body, setBody ]= useState('')
     const addNote = (e) => {
@@ -16,14 +17,29 @@ const NoteApp = () => {
                 body
             }
         ])
+        
         setTitle('')
         setBody('')
     }
+
     const removeNote = (title) => {
         setNotes(notes.filter((note) => {
             return note.title !== title
         }))
     }
+
+    // const retrieveNotes = () => {
+    //     
+    //     
+    //     setNotes([])
+    // }
+
+    // console.log(notes)
+
+    useEffect(() => {
+        const jsonString = JSON.stringify(notes)
+        localStorage.setItem('notes', jsonString)
+    })
 
     return (
     <div>
@@ -38,7 +54,7 @@ const NoteApp = () => {
         {notes.length <1 ? <p>Add Note</p> : ''}
         <form onSubmit={addNote}>
             <input placeholder='title' value={title} onChange={(e) => setTitle(e.target.value)} />
-            <input placeholder='body' value={body} onChange={(e) => setBody(e.target.value)} />
+            <textarea placeholder='body' value={body} onChange={(e) => setBody(e.target.value)} />
             <button>Add Note</button>
         </form>
     </div>
@@ -49,6 +65,10 @@ const NoteApp = () => {
 //     const [count, setCount] = useState(props.count) 
 //     const [text, setText] = useState('')
 
+//     useEffect(() => {
+//         console.log('use Effect ran')
+//         document.title = count
+//     })
 
 //     const increment = () => {
 //         setCount(count +1)
@@ -73,7 +93,7 @@ const NoteApp = () => {
 //     )
 // }
 
-ReactDOM.render(<NoteApp />, document.getElementById('root'));
+ReactDOM.render(<NoteApp count={0} />, document.getElementById('root'));
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
